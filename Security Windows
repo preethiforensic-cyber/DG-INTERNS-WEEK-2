@@ -1,0 +1,91 @@
+Key Windows Security Event IDs (15 Events)
+1. Table of 15 important events
+Event ID
+Log
+Meaning
+When to use it / what to check
+4624
+Security
+An account successfully logged on.
+Check who logged in, the logon type, the source address and the time. Compare with normal behaviour. Type 3 and 10 from unusual IPs need attention.
+4625
+Security
+An account failed to log on.
+Detect password guessing and brute force. Count failures per account and per source IP. Check the Status and SubStatus codes (for example 0xC000006A means wrong password, 0xC0000064 means the user name does not exist).
+4634
+Security
+An account was logged off.
+Work out how long a session lasted. Match it with the matching 4624 using the Logon ID.
+4648
+Security
+A logon was attempted using explicit credentials.
+Detect someone using another account's credentials, for example with runas or when moving between machines.
+4672
+Security
+Special privileges were assigned to a new logon.
+Shows an administrator-level logon. Review whenever it appears for accounts that should not be privileged.
+4688
+Security
+A new process was created.
+Track which programs ran, which parent started them and (if enabled) the command line. Key for spotting PowerShell, cmd and tools used by attackers.
+4697
+Security
+A service was installed on the system.
+Detect persistence through new services. Compare with 7045 in the System log.
+4720
+Security
+A user account was created.
+Spot unexpected new accounts, especially backdoor accounts created by attackers.
+4722
+Security
+A user account was enabled.
+Find disabled or old accounts being turned back on.
+4724
+Security
+An attempt was made to reset an account's password.
+Detect unauthorised password resets by someone other than the account owner.
+4732
+Security
+A member was added to a security-enabled local group.
+Check if someone was added to Administrators (group SID S-1-5-32-544). A classic privilege escalation step.
+4768
+Security
+A Kerberos authentication ticket (TGT) was requested.
+Track domain logons. Many requests for many accounts from one host can indicate account guessing.
+4769
+Security
+A Kerberos service ticket was requested.
+Watch for a very high number of service tickets, a sign of Kerberoasting.
+4776
+Security
+The domain controller tried to validate credentials (NTLM).
+Detect NTLM logon attempts and failures, including pass-the-hash style activity and guessing against domain accounts.
+1102
+Security
+The audit log was cleared.
+Strong warning sign that someone is hiding their tracks. Investigate who cleared it and why. (A cleared System log is Event ID 104.)
+
+
+2. Related events worth knowing
+Event ID
+Log
+Meaning
+7045
+System
+A new service was installed (used in the Week 2 sc create task).
+4698
+Security
+A scheduled task was created (another persistence method).
+4740
+Security
+A user account was locked out.
+
+
+3. Example detection ideas
+Brute force: many 4625 events for one account (or from one IP) in a short time, followed by a 4624 success.
+Backdoor admin: 4720 followed within minutes by 4732 for the same account.
+Hiding tracks: 1102 appearing right after suspicious activity.
+Persistence: 7045 or 4697 with a service name or file path that is not normal for the company.
+Remember: know three groups. Logons: 4624, 4625, 4634, 4648, 4672, 4768, 4769, 4776. Accounts: 4720, 4722, 4724, 4732. System changes: 4688, 4697, 1102.
+
+
