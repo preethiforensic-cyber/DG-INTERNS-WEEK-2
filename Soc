@@ -1,0 +1,64 @@
+What Is a Baseline and Why Does Knowing What Is Normal Matter for a SOC Analyst?
+1. Definition
+A baseline is a recorded picture of what normal looks like on a network, a computer, a user or an application during regular, healthy operation. It is built from measurements taken over time, such as typical traffic volumes, usual ports and protocols, normal logon hours and the usual list of running processes.
+2. Types of baseline
+Type
+What it records
+Example of "normal"
+Network
+Traffic volume, protocols, ports, top talkers, DNS patterns.
+About 200 MB per hour, mostly HTTPS and DNS, five known servers talk to the database.
+Host / system
+Running processes, services, installed software, startup entries, open ports.
+A workstation runs the same 60 processes and listens on no ports.
+User
+Logon times, locations, devices, typical resources accessed.
+An accountant logs in 9 AM to 6 PM from one office PC.
+Application
+Normal requests, response codes and error rates.
+A web server returns mostly 200 codes and under 1% errors.
+
+
+3. How to build one
+Collect data from logs, Wireshark/NetFlow, Event Viewer and monitoring tools for a period long enough to include busy and quiet times (for example two to four weeks).
+Record the typical values and ranges, not just single numbers.
+Document the reasons for exceptions, such as month-end reports.
+Save the baseline and review it regularly.
+Update it after approved changes (new servers, software, staff).
+4. Why it matters for a SOC analyst
+Faster detection: a deviation (for example traffic to a new country at 3 AM) stands out immediately.
+Fewer false alarms: an activity that looks strange but is normal for that system is not escalated, which saves time and avoids alert fatigue.
+Better alert rules: thresholds are based on real data, for example "alert at more than 10 failed logons in 5 minutes" if normal is two.
+Faster investigation: the analyst can compare the current state with the baseline to see exactly what changed.
+Spotting stealthy attacks: slow attacks, beaconing and insider misuse often look like normal traffic unless you know the usual pattern.
+Supports reporting and improvement: shows the effect of changes and security controls over time.
+5. Worked examples
+Area
+Baseline (normal)
+Deviation (suspicious)
+Possible meaning
+Network
+A file server talks to 20 internal clients.
+The server suddenly sends 10 GB to an external IP.
+Data theft.
+Logons
+Admin logs on 9 AM to 5 PM, type 2.
+Admin logon at 3 AM, type 10 from a foreign IP.
+Stolen credentials.
+Processes
+Office PC never runs PowerShell.
+PowerShell started by Word.
+Malicious macro.
+DNS
+A few hundred queries per hour.
+Thousands of random-looking queries per minute.
+Malware or DNS tunnelling.
+
+
+6. Limits and pitfalls
+A bad baseline: if you build it while the system is already compromised, bad behaviour becomes "normal".
+Baseline drift: normal changes over time, so the baseline must be updated.
+Too narrow a time window: it may miss weekly or monthly patterns.
+Remember: you cannot find the abnormal without knowing the normal. In the Week 2 lab, your captures of the Kali-to-Ubuntu traffic before the scan form a small baseline, and the Nmap scan is the deviation.
+
+
