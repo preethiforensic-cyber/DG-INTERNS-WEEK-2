@@ -1,0 +1,42 @@
+Writeup: TryHackMe Windows Basics
+Item
+Details
+Room
+Windows Basics
+Link
+https://tryhackme.com/room/windowsbasics
+Platform
+TryHackMe (free room)
+
+
+1. Overview
+A hands-on introduction to the Windows desktop. The room uses a story: it is the first day at a fictional company called TryHatMe, and the learner works on a Windows Server 2019 workstation. It covers the interface, File Explorer, system information, installing and removing software, settings, Task Manager and the built-in security tools.
+2. Learning objectives
+Move around the desktop, taskbar and Start menu.
+Use File Explorer and understand file paths.
+Check system details and change settings.
+Use Task Manager, Windows Security and the firewall to monitor and protect the system.
+3. Task-by-task notes
+Task 1: Introduction
+Started the lab machine in split-screen. The room expects earlier knowledge of computer parts, computer types and what an operating system does.
+Task 2: Exploring the Windows workspace
+Authentication: before the desktop appears, a user proves identity with a password, PIN or other method. Account types: Guest (very limited), Standard (everyday tasks) and Administrator (full control). The lab logs in as Administrator.
+Desktop parts: desktop icons, Start menu, search, Task View, pinned apps, network and audio icons, date and time, notifications.
+Built-in tools: Notepad, File Explorer, Settings.
+Your PC shows the device name, RAM and Windows version.
+File Explorer: Windows uses a folder hierarchy. The address bar shows the full path, here C:\Users\Administrator\Desktop\TryHatMe Onboarding.
+
+Task 3: Configuring and securing Windows
+Updates: Windows Update patches the OS. Apps update in different ways (automatic, prompts, or manual installers).
+Installing: from the Microsoft Store (not on Windows Server by default) or from a vendor's .exe or .msi installer. Uninstalling: Store, Add or remove programs, Control Panel, or the app's own uninstaller.
+Settings vs Control Panel: Settings is the modern location, and Control Panel is the older tool still used for some admin tasks.
+Task Manager tabs: Processes, Performance, Users, Details (shows PIDs) and Services.
+Windows Security: Virus & threat protection, Firewall & network protection, App & browser control, Device security. I ran a custom scan on the onboarding folder, which detected the harmless EICAR test file.
+Windows Defender Firewall profiles: Domain, Private and Public. Advanced settings show inbound and outbound rules.
+Task 4: Conclusion
+Key terms recapped: Desktop, Taskbar, Start menu, Search, File Explorer, Windows Update, Microsoft Store, Settings, Control Panel, Task Manager, Windows Security and Windows Defender Firewall.
+4. Key takeaways
+Know the default tools, because attackers and defenders both use them.
+Task Manager and the Details tab help spot unusual processes.
+The firewall and antivirus are built in, so check they are on.
+
