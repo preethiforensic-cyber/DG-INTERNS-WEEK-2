@@ -1,0 +1,124 @@
+Wireshark: Capture Filters vs Display Filters
+1. The main difference
+Feature
+Capture filter
+Display filter
+When it is applied
+Before and during capture.
+After capture, on packets already stored.
+Syntax
+BPF (Berkeley Packet Filter), the same style used by tcpdump.
+Wireshark's own field-based syntax, such as tcp.port == 80.
+What it does
+Packets that do not match are never saved.
+Packets that do not match are only hidden. They stay in the file.
+Can be changed later?
+No. Dropped packets are lost.
+Yes. You can change it at any time.
+Where to type it
+Capture options, before starting.
+The green filter bar on top of the packet list.
+Best use
+Busy networks, to keep file size small, or to capture one host only.
+Detailed analysis, hunting and reports.
+
+
+Colour of the filter bar: green means valid syntax, red means an error, yellow means a warning.
+Common mistake: typing display syntax such as ip.addr == 10.0.0.1 into the capture filter box. The capture filter needs host 10.0.0.1.
+Tip: capture broadly, then narrow with display filters, unless the network is very busy.
+2. Ten working capture filter examples (BPF)
+#
+Capture filter
+Meaning
+1
+host 192.168.56.104
+Traffic to or from this host.
+2
+src host 192.168.56.106
+Traffic sent by this host.
+3
+dst host 192.168.56.104
+Traffic sent to this host.
+4
+net 192.168.56.0/24
+Traffic within this subnet.
+5
+port 80
+Traffic on port 80 (TCP or UDP).
+6
+tcp port 22
+SSH traffic only.
+7
+udp port 53
+DNS traffic over UDP.
+8
+icmp
+Ping and other ICMP messages.
+9
+not arp
+Everything except ARP.
+10
+host 192.168.56.104 and tcp port 80
+HTTP traffic with one server (filters can be combined with and, or, not).
+
+
+3. Ten working display filter examples
+#
+Display filter
+Meaning
+1
+ip.addr == 192.168.56.104
+Packets to or from this IP.
+2
+tcp.port == 80
+TCP traffic with source or destination port 80.
+3
+http.request.method == "GET"
+HTTP GET requests.
+4
+dns
+All DNS packets.
+5
+dns.qry.name contains "example"
+DNS queries containing this text.
+6
+icmp.type == 8
+ICMP echo requests (pings).
+7
+arp
+All ARP packets.
+8
+tcp.flags.syn == 1 && tcp.flags.ack == 0
+First packet of a handshake. A burst of these is typical of a SYN port scan.
+9
+tcp.flags.reset == 1
+Reset packets.
+10
+frame contains "password"
+Any packet containing this text. Useful for spotting clear-text credentials.
+
+
+4. Operators you can use in display filters
+Operator
+Meaning
+Example
+== or !=
+Equal or not equal
+ip.src == 10.0.0.5
+&& or and
+Both conditions true
+tcp.port == 80 && ip.addr == 10.0.0.5
+|| or or
+Either condition true
+dns || arp
+! or not
+Negation
+!(arp || dns)
+contains
+Field or packet contains text
+http.host contains "test"
+
+
+Remember: capture filters decide what is recorded. Display filters decide what you see. For the Week 2 lab, capture the Kali-to-Ubuntu traffic and use tcp.flags.syn==1 && tcp.flags.ack==0 to show the Nmap SYN scan burst.
+
+
