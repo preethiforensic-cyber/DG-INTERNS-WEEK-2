@@ -1,0 +1,83 @@
+Nmap Scan Types: How They Work and What They Leave in Packets and Logs
+1. Port states Nmap reports
+State
+Meaning
+open
+A service is listening and answered.
+closed
+Reachable, but no service is listening.
+filtered
+Nmap cannot tell, because a firewall is blocking or dropping the probe.
+unfiltered
+Reachable, but open or closed is unknown (seen with an ACK scan, -sA).
+open|filtered
+No response, so it could be open or filtered (common in UDP, NULL, FIN and Xmas scans).
+closed|filtered
+Nmap cannot decide between closed and filtered (rare).
+
+
+2. The seven scan options
+Option
+Name
+How it works
+What it leaves in packets
+What it leaves in logs / detection
+-sn
+Ping scan (host discovery, no port scan)
+On the local network it sends ARP requests. Across routers it sends ICMP echo, a TCP SYN to port 443 and a TCP ACK (or SYN when not root) to port 80. A reply means the host is up.
+A rapid series of ARP requests or ICMP echoes to consecutive addresses.
+Rarely logged by hosts. Firewalls and IDS can alert on ping sweeps.
+-sS
+TCP SYN (half-open, "stealth") scan
+Sends SYN. SYN/ACK means open, so Nmap replies RST and never finishes the handshake. RST/ACK means closed. No reply means filtered. Needs root.
+Many SYN packets from one source to many ports, with RST packets back. Filter: tcp.flags.syn==1 && tcp.flags.ack==0.
+Most applications do not log it, because no connection is fully made. Network IDS tools (for example Snort) detect the pattern.
+-sT
+TCP connect scan
+Uses the operating system to finish the full three-way handshake, then closes it. Works without root.
+Complete handshakes followed by RST/ACK or FIN.
+Easier to see: servers and firewalls often log each full connection, for example in the web or SSH logs.
+-sU
+UDP scan
+Sends UDP packets. An ICMP port-unreachable (type 3, code 3) reply means closed. No reply means open or filtered. Slow, so --top-ports is often used.
+Many UDP packets to different ports and many ICMP unreachable replies.
+Few application logs. Firewalls may log blocked UDP and ICMP.
+-sV
+Service/version detection
+Connects to open ports and sends probes, then compares banners and replies to a database to find the service and version.
+Full connections with unusual or malformed application requests.
+Application logs show odd requests, strange User-Agents or protocol errors.
+-O
+OS detection
+Sends specially made TCP, UDP and ICMP packets to an open and a closed port and compares the replies with known operating system fingerprints. Needs root.
+Unusual packets: odd flag and option combinations, repeated probes.
+IDS signatures often exist for these probes.
+-A
+Aggressive scan
+Turns on -sV, -O, default scripts (-sC) and traceroute together.
+All of the above in one noisy burst.
+Very easy to detect, so use only on your own lab or with permission.
+
+
+3. Useful related options
+Option
+Purpose
+-Pn
+Skip host discovery. Useful when a Windows firewall blocks ping.
+-p- , -p1-1023 , -F
+All ports, a port range, or the 100 most common ports.
+-T0 to -T5
+Timing speed. T0 is the slowest and quietest. T5 is the fastest and noisiest.
+-oN, -oX, -oG, -oA
+Save output as normal text, XML, grepable, or all three.
+-v / -vv
+More detail while scanning.
+
+
+4. The defender's view
+A SYN scan shows as many SYN packets and RSTs in a short time. Snort or Suricata rules count SYNs from one source over time.
+Open ports in a scan result are what an attacker would try next, so defenders also scan their own systems to find and close unneeded ports.
+Run Nmap only on systems you own or have written permission to test. In this lab, scan only the Ubuntu and Windows VMs.
+Remember: SYN scan = half-open, quiet in application logs. Connect scan = full handshake, visible in logs. UDP scan = slow, relies on ICMP errors. -sV and -O are about identifying services and systems, and -A does everything at once.
+
+
