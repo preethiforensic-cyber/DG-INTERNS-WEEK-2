@@ -1,0 +1,35 @@
+What an Analyst Should Look for in DNS, HTTP, HTTPS/TLS, ARP, ICMP and SMB Traffic
+1. Overview table
+Protocol
+Normal behaviour
+Suspicious behaviour
+DNS (UDP/TCP 53)
+Short queries for known domains. Fast replies from the company resolver. Most queries are A, AAAA, MX and PTR.
+Very long or random-looking subdomain names (data hidden in DNS). Many NXDOMAIN replies (malware generating domains). Large TXT replies. Queries sent straight to unknown external DNS servers. Same domain queried at fixed intervals.
+HTTP (TCP 80)
+GET and POST requests to known sites with a normal browser User-Agent. Reasonable response codes.
+Passwords or tokens in clear text. Requests to a bare IP address. Fixed-interval requests (beaconing). Unusual User-Agent such as a scripting tool. Downloads of .exe, .ps1 or .zip from unknown hosts. Many 401/403/404 codes (guessing or scanning).
+HTTPS / TLS (TCP 443)
+Valid, trusted certificate. Server name (SNI) matches a known site. Modern TLS version.
+Self-signed, expired or mismatched certificates. TLS on unusual ports. Connections to a raw IP with no SNI. Very regular small sessions to one host. Old protocol versions or odd cipher choices.
+ARP
+One request and one reply when a host needs a neighbour's MAC. Few packets per host.
+One IP address answered by two different MAC addresses (spoofing). Floods of unrequested (gratuitous) ARP replies. A host asking for every address on the subnet (scan).
+ICMP
+Occasional small echo requests and replies. Destination unreachable messages after real errors.
+Echo requests to many addresses in order (ping sweep). Unusually large payloads or data hidden in echo packets (tunnelling). Many port-unreachable messages (UDP scan).
+SMB (TCP 445)
+File and printer sharing between internal clients and file servers. Authenticated sessions.
+SMB leaving the network to the internet. One host connecting to many hosts (lateral movement). Many failed logons. Access to ADMIN$ or IPC$ shares. Old SMBv1 in use. Large transfers at odd hours.
+
+
+2. What to inspect for each protocol
+DNS: query name length, record type, response code, how often one host asks. Filter: dns, dns.flags.rcode != 0.
+HTTP: method, URL, Host header, User-Agent, response code, file type. Filter: http.request, http.user_agent contains "curl".
+TLS: certificate details and the Client Hello server name. Filter: tls.handshake.type == 1.
+ARP: pairs of IP and MAC addresses. Wireshark flags duplicates under Analyze > Expert Information. Filter: arp.duplicate-address-detected.
+ICMP: type and code (type 8 echo request, type 0 reply, type 3 unreachable), packet size and the number of destinations. Filter: icmp.
+SMB: commands, share names and authentication results. Filter: smb || smb2.
+3. Quick example
+A workstation sends 2,000 DNS queries in one minute for names like a8f3k2x9.example-bad.com, most of which return NXDOMAIN. Normal browsing never looks like this. An analyst would suspect malware that generates random domain names and would check which process on the host 
+
