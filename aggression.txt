@@ -1,0 +1,22 @@
+# Nmap 7.99 scan initiated Sat Oct 24 06:36:17 2026 as: /usr/lib/nmap/nmap --privileged -A -oN aggression.txt -oX aggression.xml 192.168.56.104
+Nmap scan report for 192.168.56.104
+Host is up (0.0017s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.52 ((Ubuntu))
+|_http-title: Apache2 Ubuntu Default Page: It works
+|_http-server-header: Apache/2.4.52 (Ubuntu)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: VoIP adapter|bridge|general purpose
+Running (JUST GUESSING): AT&T embedded (93%), Oracle Virtualbox (92%), Slirp (92%), QEMU (90%)
+OS CPE: cpe:/o:oracle:virtualbox cpe:/a:danny_gasparovski:slirp cpe:/a:qemu:qemu
+Aggressive OS guesses: AT&T BGW210 voice gateway (93%), Oracle Virtualbox Slirp NAT bridge (92%), QEMU user mode network gateway (90%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+
+TRACEROUTE (using port 80/tcp)
+HOP RTT     ADDRESS
+1   0.76 ms 192.168.56.104
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat Oct 24 06:36:43 2026 -- 1 IP address (1 host up) scanned in 26.28 seconds
