@@ -1,0 +1,15 @@
+# Nmap 7.99 scan initiated Sat Oct 24 06:35:35 2026 as: /usr/lib/nmap/nmap --privileged -O -oN os.txt -oX os.xml 192.168.56.104
+Nmap scan report for 192.168.56.104
+Host is up (0.0034s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE
+80/tcp open  http
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: VoIP adapter|bridge|general purpose
+Running (JUST GUESSING): AT&T embedded (93%), Oracle Virtualbox (92%), Slirp (92%), QEMU (90%)
+OS CPE: cpe:/o:oracle:virtualbox cpe:/a:danny_gasparovski:slirp cpe:/a:qemu:qemu
+Aggressive OS guesses: AT&T BGW210 voice gateway (93%), Oracle Virtualbox Slirp NAT bridge (92%), QEMU user mode network gateway (90%)
+No exact OS matches for host (test conditions non-ideal).
+
+OS detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat Oct 24 06:35:47 2026 -- 1 IP address (1 host up) scanned in 11.86 seconds
