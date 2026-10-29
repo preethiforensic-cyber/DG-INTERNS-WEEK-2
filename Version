@@ -1,0 +1,1 @@
+# Nmap 7.99 scan initiated Sat Oct 24 05:58:11 2026 as: /usr/lib/nmap/nmap --privileged -sV -oN version.txt -oX version.xml 192.168.56.104
