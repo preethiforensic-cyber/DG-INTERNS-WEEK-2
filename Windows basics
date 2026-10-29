@@ -1,0 +1,73 @@
+Windows Basics: Processes, Services, Registry, Users and Groups, UAC and Event Logs
+1. Processes
+A process is a running program. Each process has a name, a PID (process ID), a parent process, an owner (user) and its own memory.
+View them in Task Manager (Processes and Details tabs) or with tasklist in Command Prompt, or Get-Process in PowerShell.
+Parent-child relationships matter in security. For example, Microsoft Word starting powershell.exe is suspicious, but explorer.exe starting a browser is normal.
+Several system processes always run: System, smss.exe, csrss.exe, wininit.exe, services.exe, lsass.exe (handles logons) and many svchost.exe (host for services). Malware often copies these names, so check the file path.
+Event ID 4688 (process creation) records new processes when auditing is on.
+2. Services
+A service is a program that runs in the background, often from startup, without a user logged in (for example the Windows Update service or the Print Spooler).
+Manage them with services.msc, sc query, sc create, sc delete, or in Task Manager (Services tab).
+Start types: Automatic, Manual, Disabled. Services run under an account such as Local System (very powerful), Local Service or Network Service.
+Many services share one svchost.exe process.
+Security angle: attackers install services to keep access after a reboot (persistence). Event ID 7045 (System log) and 4697 (Security log) record new service installs.
+3. Registry
+The registry is a database of settings for Windows, drivers, software and users. It is edited with regedit.
+Hive
+Short name
+What it holds
+HKEY_LOCAL_MACHINE
+HKLM
+Settings for the whole computer (software, services, hardware).
+HKEY_CURRENT_USER
+HKCU
+Settings for the user who is logged in.
+HKEY_CLASSES_ROOT
+HKCR
+File type associations and COM objects.
+HKEY_USERS
+HKU
+Settings for all loaded user profiles.
+HKEY_CURRENT_CONFIG
+HKCC
+Current hardware profile.
+
+
+Run keys, for example HKCU\Software\Microsoft\Windows\CurrentVersion\Run, start programs at logon. Malware often adds entries here.
+Changing the registry can break the system, so always back up a key before editing it.
+4. Users and groups
+Local accounts are stored in the SAM database. Domain accounts are stored on a domain controller.
+Account types: Administrator (full control), Standard user (everyday tasks) and Guest (very limited).
+Groups give rights to many users at once. Important local groups: Administrators, Users, Remote Desktop Users, Backup Operators.
+Commands: net user, net user labuser /add, net localgroup Administrators, or the lusrmgr.msc console.
+Related Event IDs: 4720 (user created), 4722 (enabled), 4724 (password reset), 4732 (added to a group).
+5. User Account Control (UAC)
+UAC asks for permission before an action that needs administrator rights. An administrator normally runs with a limited (filtered) token and only gets the full token after approval.
+The prompt usually appears on the secure desktop, which stops other programs from clicking Yes on the user's behalf.
+Standard users must enter an administrator password. Administrators only click Yes.
+Why it matters: it limits what malware can do without the user noticing. Settings range from "Never notify" to "Always notify".
+6. The three main Event Viewer logs
+Log
+What it records
+Typical examples
+Value for a SOC analyst
+Application
+Events from installed programs and Windows components.
+An app crash, a database error.
+Finding crashes, errors and application misuse.
+Security
+Audit events: logons, account changes, object access, policy changes, log clearing.
+4624, 4625, 4720, 4732, 1102.
+Most important log for detecting attacks and tracking users.
+System
+Events from the operating system, drivers and services.
+A service starting or stopping, a driver failing, 7045 (service installed).
+Spotting new services, shutdowns and hardware problems.
+
+
+Open it with eventvwr.msc. Log files are saved as .evtx files in C:\Windows\System32\winevt\Logs.
+Each event has a level: Information, Warning, Error, Critical, and for security logs Audit Success or Audit Failure.
+Use Filter Current Log to filter by Event ID, and Find to search text.
+Remember: processes and services show what is running, the registry shows how it starts, users and groups show who has power, UAC limits that power, and the Security log records what people did.
+
+
