@@ -1,0 +1,57 @@
+Writeup: TryHackMe Windows Fundamentals 1
+Item
+Details
+Room
+Windows Fundamentals 1
+Link
+https://tryhackme.com/room/windowsfundamentals1xbx
+Platform
+TryHackMe (free room)
+
+
+1. Overview
+This room introduces how Windows is organised: its editions, desktop, file system, the important System32 folder, user accounts and permissions, User Account Control, settings and Task Manager. It prepares the ground for reading Windows logs and investigating hosts.
+2. Learning objectives
+Recognise Windows editions and the desktop interface.
+Understand the NTFS file system, permissions and special features.
+Know where core system files live.
+Explain user accounts, groups and UAC.
+Use Control Panel, Settings and Task Manager.
+3. Topics covered
+Topic
+What I learned
+Why it matters in security
+Windows editions
+Home, Pro and Enterprise differ in features and management tools.
+Enterprise features include stronger management and security controls.
+Desktop (GUI)
+Desktop, Start menu, taskbar, notification area.
+Know the normal layout to spot odd changes.
+File system
+NTFS is the main Windows file system. It supports permissions, encryption, compression and journaling. Older systems used FAT.
+Permissions on files decide who can read or change data. NTFS also supports Alternate Data Streams, which can hide data.
+Windows folder and System32
+C:\Windows\System32 holds core system programs and libraries.
+Malware often hides in or imitates files from this folder.
+User accounts and permissions
+Administrator, Standard and local groups. Accounts can be managed in Computer Management and with net user.
+Least privilege reduces damage when an account is compromised.
+User Account Control (UAC)
+Prompts for approval before admin actions.
+Limits what malware can do silently.
+Settings and Control Panel
+Central places to configure the system.
+Misconfiguration is a common weakness.
+Task Manager
+Shows processes, performance, users, services and startup items.
+First tool to check for suspicious processes.
+
+
+
+4. Key takeaways
+The file system, users and processes are the three main places to look in an investigation.
+NTFS permissions and UAC are basic but powerful protections.
+Knowing normal Windows layout is the first step towards spotting abnormal behaviour.
+
+
+
