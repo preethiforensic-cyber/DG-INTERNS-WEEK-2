@@ -1,0 +1,88 @@
+Wireshark Filter - Meaning - When to Use It
+#
+Filter
+Meaning
+When to use it
+1
+ip.addr == 192.168.56.104
+Traffic to or from this IP
+Focus on one host
+2
+ip.src == 192.168.56.106
+Traffic sent by this IP
+See what one host sends
+3
+ip.dst == 192.168.56.104
+Traffic sent to this IP
+See what one host receives
+4
+tcp
+All TCP packets
+Look only at TCP traffic
+5
+udp
+All UDP packets
+Look only at UDP traffic
+6
+tcp.port == 80
+TCP traffic on port 80
+Check web traffic
+7
+http
+All HTTP packets
+Analyse web traffic
+8
+http.request.method == “GET”
+HTTP GET requests
+Find page requests
+9
+http.request.method == “POST”
+HTTP POST requests
+Find form or data uploads
+10
+dns
+All DNS packets
+Check name lookups
+11
+dns.qry.name contains “example”
+DNS queries with this text
+Find lookups for a domain
+12
+icmp
+All ICMP packets
+Check ping traffic
+13
+arp
+All ARP packets
+Check address resolution or spoofing
+14
+tcp.flags.syn == 1 && tcp.flags.ack == 0
+First handshake packets
+Detect port scans
+15
+tcp.flags.reset == 1
+RST packets
+See closed ports or reset connections
+16
+tcp.analysis.retransmission
+Resent packets
+Find network problems
+17
+tls.handshake.type == 1
+TLS Client Hello
+See HTTPS server names
+18
+frame contains “password”
+Packets with this text
+Find clear-text credentials
+19
+!(arp
+
+
+dns)
+20
+tcp.stream eq 0
+One full TCP conversation
+Follow a single session
+
+
