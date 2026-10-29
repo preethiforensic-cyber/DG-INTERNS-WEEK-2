@@ -1,0 +1,66 @@
+Windows Logon Types 2, 3, 4, 5, 7, 10 and 11
+1. What is a logon type?
+Every successful logon (Event ID 4624) and failed logon (Event ID 4625) contains a Logon Type number. It tells the analyst how the account signed in: at the keyboard, over the network, through a service, by Remote Desktop, and so on. The same account name can look normal with one type and suspicious with another.
+2. Table of logon types
+Type
+Name
+Meaning
+Normal example
+Suspicious example
+2
+Interactive
+Someone logs on at the computer's own keyboard and screen.
+An employee signs in to their office PC in the morning.
+A local keyboard logon on a locked server room machine at 3 AM, or by an account that never uses that machine.
+3
+Network
+Access to a shared resource over the network, such as a file share. No desktop is created.
+A user opens a shared folder on the file server.
+One workstation making type 3 logons to many hosts in minutes (lateral movement), or many type 3 failures against an admin account.
+4
+Batch
+A scheduled task or batch job runs under an account.
+A nightly backup task runs.
+A new scheduled task running under a high-privilege account, started from an unknown script.
+5
+Service
+A Windows service starts under its configured account.
+A known service starts at boot.
+A newly installed unknown service logging on as an admin account (see 7045 and 4697).
+7
+Unlock
+A locked workstation is unlocked.
+A user returns from lunch and unlocks their PC.
+An unlock at a time the user was away or on leave.
+10
+RemoteInteractive
+Logon through Remote Desktop (RDP) or similar remote sessions.
+An IT administrator connects to a server from the office network.
+An RDP logon from an unknown or foreign IP address, or many RDP failures followed by a success.
+11
+CachedInteractive
+Logon using cached credentials, when the domain controller is not reachable.
+A laptop user signs in while travelling with no network.
+A cached logon on a desktop that should always be connected, or logons by an account that has been disabled in the domain.
+
+
+3. Other types you may see
+Type
+Name
+Short note
+8
+NetworkCleartext
+Network logon where the password was sent in clear text. Rare and risky.
+9
+NewCredentials
+Process started with different network credentials (for example runas /netonly).
+
+
+4. How an analyst uses logon types
+Always read Logon Type, Account Name, Workstation Name and Source Network Address together.
+Compare with the baseline. A type 10 logon to a workstation that never uses RDP is unusual.
+Failed logons (4625) with type 3 or 10 from external IPs are typical of internet-facing password guessing.
+Match 4624 with 4634 using the Logon ID to see how long a session lasted.
+Quick memory aid: 2 = at the keyboard, 3 = over the network, 4 = scheduled job, 5 = service, 7 = unlock, 10 = Remote Desktop, 11 = cached (offline).
+
+
