@@ -1,0 +1,4 @@
+# Nmap 7.99 scan initiated Sat Oct 24 05:47:36 2026 as: /usr/lib/nmap/nmap --privileged -sn -oN host_discovery.txt -oX host_discovery.xml 192.168.56.104
+Nmap scan report for 192.168.56.104
+Host is up (0.00060s latency).
+# Nmap done at Sat Oct 24 05:47:39 2026 -- 1 IP address (1 host up) scanned in 2.58 seconds
