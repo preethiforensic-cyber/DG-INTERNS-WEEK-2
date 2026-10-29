@@ -1,0 +1,94 @@
+TCP Three-Way Handshake, Teardown and Flags
+1. Why TCP needs a handshake
+TCP (Transmission Control Protocol) gives reliable, ordered delivery between two programs. Before any data moves, both sides must agree to talk and must exchange their starting sequence numbers. These numbers let each side number its bytes, detect lost data and put packets back in order. The three-way handshake is how this agreement is made.
+2. Three-way handshake (opening a connection)
+Step
+Direction
+Flags
+What happens
+Client state / Server state
+1
+Client to server
+SYN
+Client asks to open a connection and sends its initial sequence number (call it x).
+SYN_SENT / LISTEN
+2
+Server to client
+SYN, ACK
+Server agrees. It sends its own initial sequence number (y) and acknowledges x+1.
+SYN_SENT / SYN_RECEIVED
+3
+Client to server
+ACK
+Client acknowledges y+1. Both sides now know each other's numbers.
+ESTABLISHED / ESTABLISHED
+
+
+Why three steps and not two? The server must be sure the client received its SYN-ACK, and the client must be sure the server is ready. Three packets prove both directions work.
+Random sequence numbers: the starting numbers are chosen randomly, so an attacker cannot easily guess them and inject fake packets.
+In Wireshark: use tcp.flags.syn==1 to find the first two steps, and follow a single conversation with tcp.stream eq 0.
+3. Connection teardown (closing a connection)
+A normal close is four steps, because each direction of the connection is closed on its own (this is called a half-close).
+Step
+Direction
+Flags
+Meaning
+1
+Side A to side B
+FIN, ACK
+A has no more data to send (A: FIN_WAIT_1).
+2
+Side B to side A
+ACK
+B confirms (A: FIN_WAIT_2, B: CLOSE_WAIT). B may still send data.
+3
+Side B to side A
+FIN, ACK
+B has finished too (B: LAST_ACK).
+4
+Side A to side B
+ACK
+A confirms and waits a short time (TIME_WAIT) before fully closing.
+
+
+Abrupt close with RST: a side sends RST to end the connection at once. This happens when a packet arrives for a port with no listening service, when a firewall tears a session down, or when a program crashes.
+TIME_WAIT protects against old delayed packets being mistaken for part of a new connection.
+4. TCP flags
+Flag
+Full name
+Purpose
+Security relevance
+SYN
+Synchronize
+Starts a connection and shares the starting sequence number.
+Many SYNs from one source, with no replies completed, suggests a port scan or a SYN flood attack.
+ACK
+Acknowledge
+Confirms that data up to a number was received. Set on almost every packet after the first.
+ACK-only probes are used in firewall mapping and TCP ACK ping scans.
+FIN
+Finish
+Sender has no more data. Used for a polite close.
+Lone FIN packets with no connection are used in stealth FIN scans.
+RST
+Reset
+Immediately ends or refuses a connection.
+A closed port answers a SYN with RST/ACK. Bursts of RSTs often mean someone is scanning.
+PSH
+Push
+Asks the receiver to pass the data to the application promptly.
+Common in HTTP requests and interactive shells. FIN+PSH+URG together is the Xmas scan pattern.
+URG
+Urgent
+Marks data as urgent (the urgent pointer is valid).
+Very rare in normal traffic, so its use stands out as suspicious.
+
+
+5. Link to port scanning
+Open port: SYN is answered with SYN/ACK.
+Closed port: SYN is answered with RST/ACK.
+Filtered port: no answer, because a firewall silently drops the packet.
+A SYN scan sends RST after the SYN/ACK, so the handshake is never completed (half-open). A connect scan completes the handshake.
+6. Attack linked to the handshake: SYN flood
+An attacker sends a very large number of SYN packets, often from fake source addresses. The server answers each with SYN/ACK and keeps a half-open entry waiting for the final ACK that never comes. The waiting list fills up and real users cannot connect. Defences include SYN cookies, shorter timeouts and rate limiting. In a capture, look for many SYN packets and SYN/ACK replies with very few 
+
