@@ -1,0 +1,51 @@
+Windows Event ID - What It Means - When to Use It
+Event ID
+What it means
+When to use it
+4624
+Successful logon
+Check who logged in, from where, and the logon type
+4625
+Failed logon
+Spot brute force or password guessing
+4634
+Account logged off
+Work out session length
+4648
+Logon with explicit credentials
+Detect use of another account (runas, lateral movement)
+4672
+Special privileges assigned to a new logon
+Spot admin-level logons
+4688
+New process created
+Track programs run (needs process auditing)
+4697
+Service installed on the system
+Detect persistence through services
+4720
+User account created
+Spot unexpected new accounts
+4722
+User account enabled
+Spot re-enabled accounts
+4724
+Password reset attempt
+Detect password changes by someone else
+4732
+Member added to a local security group
+Catch users added to Administrators
+4768
+Kerberos ticket (TGT) requested
+Track domain logons
+4769
+Kerberos service ticket requested
+Detect attacks such as Kerberoasting
+4776
+Domain controller checked NTLM credentials
+Track NTLM logons and failures
+1102
+Audit log cleared
+Strong sign of an attacker hiding traces
+
+Related: Event ID 7045 (System log) records a new service installation.
