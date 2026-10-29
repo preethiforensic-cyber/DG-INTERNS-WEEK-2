@@ -1,0 +1,119 @@
+Writeup: TryHackMe Nmap Room
+
+Nmap
+
+Link : https://tryhackme.com/room/furthernmap
+Platform: TryHackMe (free room)
+
+
+1. Overview
+
+This room gives an in-depth look at port scanning with Nmap. It explains why scanning is the first step of enumeration, the main switches, each scan type (connect, SYN, UDP, NULL, FIN, Xmas, ping sweep), the Nmap Scripting Engine (NSE) and firewall evasion, and ends with a practical scan of a lab machine.
+
+2. Learning objectives
+
+Explain what a port is, how many exist and which are "well known".
+Use the common Nmap switches for scan type, verbosity, output, speed and port selection.
+Describe how each scan type works on the wire and what response means open, closed or filtered.
+Find and run NSE scripts and read their help.
+Scan hosts that block ping, and understand firewall evasion options.
+
+3. Task-by-task notes
+
+Task 1 and 2: Deploy and Introduction
+
+Deployed the target machine. It is for scanning only, so no login or exploitation is needed.
+A computer has 65,535 TCP ports (and the same range for UDP). Ports direct traffic to the right application, and a client uses a random high port to connect to a server's service port such as 443.
+Ports 1 to 1023 are the well-known (standard) ports. Port scanning is the first step of enumeration because you cannot attack what you do not know is running.
+Nmap reports a port as open, closed or filtered.
+Task 3: Nmap switches
+Purpose
+Switch
+SYN scan
+-sS
+UDP scan
+-sU
+OS detection
+-O
+Service version detection
+-sV
+More verbose output
+-v
+Verbosity level two
+-vv
+Save in all three major formats
+-oA
+Save in normal format
+-oN
+Save in grepable format
+-oG
+Aggressive mode (-sV, -O, traceroute, scripts)
+-A
+Timing template 5
+-T5
+Scan only port 80
+-p 80
+Scan ports 1000 to 1500
+-p 1000-1500
+Scan all ports
+-p-
+Run a script
+--script
+Run all "vuln" scripts
+--script=vuln
+
+
+Task 4 and 5:
+
+ Scan types overview and TCP connect scan (-sT)
+The basic scans are TCP connect (-sT), SYN (-sS) and UDP (-sU). Less common ones are NULL (-sN), FIN (-sF) and Xmas (-sX).
+A connect scan completes the full three-way handshake. Closed port: the server replies RST. Open port: SYN/ACK. Filtered: no reply because a firewall drops packets (or a firewall may fake an RST, which can mislead the scanner).
+TCP behaviour is defined in RFC 793. The room text now quotes its replacement, RFC 9293; check which one the platform accepts. A closed port sends the RST flag.
+
+Task 6: SYN scan (-sS)
+
+Also called half-open and stealth scan. After the server's SYN/ACK, Nmap sends RST instead of ACK, so the connection is never completed.
+Advantages: faster, and usually not logged by applications. Disadvantages: needs sudo (raw packets) and can upset fragile services.
+It is the default scan when run with sudo. Without sudo, Nmap uses a connect scan. Can a SYN scan run without sudo? No (N).
+
+Task 7: UDP scan (-sU)
+
+UDP has no handshake, so an open UDP port often gives no answer. Nmap marks a silent port as open|filtered.
+A closed UDP port returns an ICMP "port unreachable" message.
+UDP scans are slow (about 20 minutes for 1,000 ports), so --top-ports 20 is used.
+
+Task 8: NULL, FIN and Xmas scans
+
+NULL sends no flags. FIN sets FIN. Xmas sets PSH, URG and FIN (so the Xmas scan uses the URG flag).
+Closed port returns RST. Open ports usually give no reply, so results are open|filtered, closed or filtered.
+They are used mainly to try to get past simple firewalls that only block packets with SYN set, because these probes contain no SYN.
+Windows (and many Cisco devices) may answer RST to every port, so all ports look closed.
+
+Task 9: ICMP ping sweep (-sn)
+
+nmap -sn 192.168.0.0/24 finds live hosts without scanning ports. On a local network it uses ARP.
+Ping sweep of the 172.16.x.x network with mask 255.255.0.0: nmap -sn 172.16.0.0/16.
+
+Task 10 to 12: NSE scripts
+
+NSE scripts are written in Lua. Categories include safe, intrusive, vuln, exploit, auth, brute and discovery. Intrusive scripts (and exploit or brute force) are a very bad idea on a production system.
+Use --script=<name>, separate several scripts with commas, give inputs with --script-args, and read help with --script-help.
+The ftp-anon.nse script takes the optional argument maxlist.
+Scripts live in /usr/share/nmap/scripts and are listed in script.db. Searching "smb" shows smb-os-discovery as the script that finds the SMB server's OS. Check its dependency yourself in the script file (header dependencies); expected answer: smb-brute.
+
+Task 13: Firewall evasion
+
+Windows firewalls block ICMP (ping) by default, so Nmap thinks the host is down. Use -Pn to skip host discovery.
+Other options: -f (fragment packets), --mtu, --scan-delay, --badsum. The switch that adds random data to packets is --data-length.
+
+
+
+Commands used: nmap -sX -p1-999 <target>, sudo nmap -sS -p1-5000 <target>, nmap -sT -p 80 <target> while Wireshark runs, and nmap -p21 --script=ftp-anon <target>.
+4. Key takeaways
+A scan is only as useful as its output: always save results with -oA or -oN.
+SYN scans are quieter than connect scans but still easy for an IDS to detect.
+Different scan types give different answers depending on the firewall and the target operating system.
+Only scan systems you are authorised to test.
+
+
+
