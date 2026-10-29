@@ -1,0 +1,8 @@
+# Nmap 7.99 scan initiated Sat Oct 24 05:48:41 2026 as: /usr/lib/nmap/nmap --privileged -sS -oN syn_scan.txt -oX syn_scan.xml 192.168.56.104
+Nmap scan report for 192.168.56.104
+Host is up (0.0075s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE
+80/tcp open  http
+
+# Nmap done at Sat Oct 24 05:48:49 2026 -- 1 IP address (1 host up) scanned in 7.98 seconds
