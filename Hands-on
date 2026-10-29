@@ -1,0 +1,19 @@
+Week 2 Hands-On Guide (commands to run and screenshot)
+Run everything yourself on your own lab VMs. Take your own screenshots. Do not submit anything you did not run.
+Task 1: Capture traffic (Ubuntu = Apache, Kali = Wireshark)
+Ubuntu: sudo apt install apache2 -y then sudo systemctl start apache2 Kali: start Wireshark on eth0, then run: ping -c 4 192.168.56.104 curl http://192.168.56.104 nslookup example.com (the DNS packet shows even if there is no internet) Screenshots: SYN / SYN-ACK / ACK, HTTP GET (filter http), DNS query (filter dns), ICMP echo (filter icmp). Save with File > Save As (.pcapng) into Captures.
+Task 2: Nmap on your own VMs (run from Kali)
+nmap -sn 192.168.56.0/24 -oN sn.txt -oX sn.xml sudo nmap -sS 192.168.56.104 -oN ss.txt -oX ss.xml nmap -sV 192.168.56.104 -oN sv.txt -oX sv.xml sudo nmap -O 192.168.56.104 -oN os.txt -oX os.xml sudo nmap -A 192.168.56.104 -oN aggressive.txt -oX aggressive.xml Repeat for the Windows VM IP (add -Pn if the Windows firewall blocks ping). While -sS runs, capture in Wireshark and filter: tcp.flags.syn==1 && tcp.flags.ack==0
+Task 3: Windows events (Windows VM, Command Prompt as Administrator)
+4625: sign in with a wrong password, or runas /user:labuser cmd with a wrong password.
+4624: sign in correctly, then note the logon type in the event details.
+4720: net user labuser Lab@12345 /add
+4732: net localgroup Administrators labuser /add
+7045 (System log): sc create DummySvc binPath= "C:\Windows\System32\cmd.exe" then sc delete DummySvc
+1102 (do this LAST): wevtutil cl Security Open Event Viewer > Windows Logs > Security (or System for 7045) > Filter Current Log, enter the ID, and screenshot each.
+Task 4: PowerShell hunting (run BEFORE clearing the Security log)
+mkdir C:\Week2
+Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4625} |
+ Select-Object TimeCreated, Id, @{n='Account';e={$_.Properties[5].Value}} |
+ Export-Csv C:\Week2\failed_logons.csv -NoTypeInformation
+Import-Csv C:\Week2\failed_logons.csv | Group-Object Account | Sort-Object Count -Descending | Select-Object Count, Name
