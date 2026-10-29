@@ -1,0 +1,76 @@
+Writeup: TryHackMe Nmap Basic Port Scans
+Item
+Details
+Room
+Nmap Basic Port Scans
+Link
+https://tryhackme.com/room/nmap02
+Platform
+TryHackMe (free room)
+
+
+1. Overview
+The second Nmap room. After finding live hosts, the next step is to find which ports are open. The room teaches the TCP connect, TCP SYN and UDP scans, how to choose which ports to scan, and how to control scan speed.
+2. Learning objectives
+Know the six port states Nmap uses.
+Read TCP flags and understand how scans use them.
+Run -sT, -sS and -sU scans and read the output.
+Control scope with -p, -F and --top-ports, and speed with -T, rates and parallelism.
+3. Task-by-task notes
+Task 2: TCP and UDP ports
+A port identifies a service on a host. Only one service can listen on a given port of one IP address.
+Nmap uses six states: open, closed, filtered, unfiltered, open|filtered, closed|filtered. Unfiltered appears with an ACK scan (-sA).
+UDP port 53 is used by DNS. TCP port 22 is used by SSH.
+Nmap considers 6 port states. The state most interesting to a pentester is open.
+Task 3: TCP flags
+The TCP header is 24 bytes. The flags are URG, ACK, PSH, RST, SYN and FIN.
+The reset flag is written RST. The flag that must be set in the first packet of the handshake is SYN.
+Task 4: TCP connect scan (-sT)
+Completes the whole handshake and then tears it down with RST/ACK. It is the only TCP option for a non-privileged user. By default Nmap tries the 1,000 most common ports. -F scans 100 ports, and -r scans ports in order.
+In Wireshark: closed ports reply RST/ACK; open port 80 replies SYN/ACK and Nmap sends ACK.
+On the example target, port 21 (FTP) is open, and Nmap names port 53 as domain (DNS). Verify these in your own scan.
+Task 5: TCP SYN scan (-sS)
+Default when run with sudo. It sends RST after receiving SYN/ACK, so no connection is completed and the scan is less likely to be logged.
+Compare it in Wireshark with a connect scan: the connect scan shows a full handshake for each open port, the SYN scan does not.
+
+Task 6: UDP scan (-sU)
+An open UDP port usually gives no reply. A closed port returns an ICMP type 3, code 3 (port unreachable) message. Silent ports are reported as open (or open|filtered).
+Example: nmap -sU --top-ports 10 <target> found port 53 open and others closed.
+On the example target, UDP port 161 is closed and its service name is snmp. Verify in your scan.
+Task 7: Scope and performance
+Need
+Option
+Scan ports 5000 to 5500
+-p5000-5500
+At least 64 probes in parallel
+--min-parallelism=64
+Very slow and paranoid
+-T0
+All ports / 100 common ports / top 10
+-p- , -F , --top-ports 10
+Limit packet rate
+--max-rate 10
+
+
+-T0 waits about five minutes between probes (very stealthy but extremely slow). -T4 is common in practice labs; -T5 may lose accuracy because of packet loss.
+4. Summary of scan types
+Scan
+Command
+Needs sudo?
+TCP connect
+nmap -sT <target>
+No
+TCP SYN
+sudo nmap -sS <target>
+Yes
+UDP
+sudo nmap -sU <target>
+Yes
+
+
+5. Key takeaways
+Connect scans are noisy and easy to log; SYN scans are quieter but still detectable in network traffic.
+UDP scanning is slow and uncertain; use --top-ports.
+Always save scan results and keep the scope focused.
+
+
