@@ -1,0 +1,74 @@
+Writeup: TryHackMe Nmap Live Host Discovery
+Item
+Details
+Room
+Nmap Live Host Discovery
+Link
+https://tryhackme.com/room/nmap01
+Platform
+TryHackMe (free room)
+Date completed
+28
+
+
+1. Overview
+The first room in the Nmap series. It answers one question: which systems on a network are up? Scanning dead addresses wastes time and creates noise, so Nmap first finds live hosts using ARP, ICMP, TCP and UDP probes, and then (optionally) looks up their names with reverse DNS.
+2. Learning objectives
+Explain why host discovery comes before port scanning.
+Describe how ARP, ICMP, TCP SYN/ACK and UDP pings find live hosts.
+Specify targets as a list, range, subnet or file.
+Use reverse DNS options.
+3. Task-by-task notes
+Task 2: Subnetworks
+A network segment is a group of devices on a shared medium. A subnet is its logical equivalent with its own address range. A /24 mask is 255.255.255.0 (about 250 hosts), and a /16 mask is 255.255.0.0 (about 65,000 hosts).
+ARP is a link-layer protocol and cannot cross a router. ARP discovery therefore only works on your own subnet.
+In the network simulator I sent ARP requests as broadcasts and observed which devices could see them.
+
+Task 3: Host discovery using TCP/IP layers
+Link layer: ARP. Network layer: ICMP (echo = type 8, echo reply = type 0). Transport layer: TCP and UDP.
+On the same subnet, an ARP request comes before an ICMP echo, because the sender needs the target's MAC address first. Once learned, the MAC is cached, so a second ping does not need a new ARP request.
+
+Task 4: Enumerating targets
+Targets can be a list, a range (10.11.12.15-20), a subnet (/30) or a file (-iL). -sL lists targets without scanning, and -n turns off DNS lookups.
+First IP for 10.10.12.13/29: the /29 block holds 8 addresses, so it starts at 10.10.12.8.
+Addresses in `10.10.0-255.101-125`: 256 x 25 = 6400.
+Task 5: ARP host discovery
+A privileged user scanning the local network gets ARP requests by default. Outside the local network Nmap uses ICMP echo, TCP ACK to port 80, TCP SYN to port 443 and ICMP timestamp.
+nmap -PR -sn <subnet> does an ARP-only discovery. A reply means the host is up.
+ARP discovery is very useful inside a network because firewalls rarely filter it.
+
+Task 6: ICMP host discovery
+Echo ping: -PE. Timestamp: -PP. Address mask: -PM.
+Many firewalls block echo, and the address mask scan found no hosts in the room example, so you must try several methods.
+Task 7: TCP and UDP host discovery
+TCP SYN ping (`-PS`) needs no privilege; unprivileged users complete the handshake. TCP ACK ping (`-PA`) needs a privileged account, because Nmap sends a bare ACK and expects an RST.
+Telnet uses port 23, so the option is -PS23.
+UDP ping (`-PU`) works because a closed UDP port returns ICMP port unreachable.
+Masscan does similar work much faster but aggressively.
+Task 8: Reverse DNS
+-R forces reverse DNS lookups for every host (even offline), -n disables them. Names such as dc01 or mail can reveal a host's role.
+4. Summary table of commands
+Scan
+Command
+ARP
+sudo nmap -PR -sn <subnet>
+ICMP echo
+sudo nmap -PE -sn <subnet>
+ICMP timestamp
+sudo nmap -PP -sn <subnet>
+ICMP address mask
+sudo nmap -PM -sn <subnet>
+TCP SYN ping
+sudo nmap -PS22,80,443 -sn <subnet>
+TCP ACK ping
+sudo nmap -PA22,80,443 -sn <subnet>
+UDP ping
+sudo nmap -PU53,161,162 -sn <subnet>
+
+
+5. Key takeaways
+If one discovery method is blocked, another may still work.
+Use ARP on the local subnet and ICMP/TCP/UDP across routers.
+Host discovery results also appear in logs and packet captures, so defenders can recognise sweeps.
+
+
