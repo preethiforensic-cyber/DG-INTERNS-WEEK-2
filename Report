@@ -1,0 +1,132 @@
+DG Interns Hub - Week 2 Report: Network Traffic Analysis, Nmap and Windows Logging
+Item
+Details
+Intern
+Preethi R (Intern ID: 008)
+Institution
+National Forensic Sciences University (NFSU)
+Organization
+DG Interns Hub
+Week
+Week 2
+Submission deadline
+30 October 2026, 11:59 pm IST
+
+
+1. Objective
+The goal of Week 2 was to read network packets and Windows event logs so that Week 3 work on endpoints and intrusion detection makes sense. It covers the TCP handshake and flags, Wireshark filters, Nmap scan types and how they look on the wire, Windows internals, Security Event IDs and logon types.
+2. Theory completed
+No.
+Topic
+File in Notes folder
+1
+TCP three-way handshake, teardown and flags
+01_TCP_Three-Way_Handshake_Teardown_and_Flags.docx
+2
+Protocols: normal vs suspicious behaviour
+02_What_an_Analyst_Looks_For_in_Common_Protocols.docx
+3
+Wireshark capture vs display filters
+03_Wireshark_Capture_Filters_vs_Display_Filters.docx
+4
+Nmap scan types
+04_Nmap_Scan_Types_and_What_They_Leave_Behind.docx
+5
+Windows basics
+05_Windows_Basics_Processes_Services_Registry_Users_UAC_and_Logs.docx
+6
+15 Windows Security Event IDs
+06_Windows_Security_Event_IDs_Table_of_15.docx
+7
+Windows logon types
+07_Windows_Logon_Types_2_3_4_5_7_10_11.docx
+8
+Baseline and why it matters
+08_Baseline_and_Why_Knowing_Normal_Matters.docx
+
+
+3. TryHackMe rooms and capture exercises
+Room / exercise
+Status
+Writeup file
+Nmap
+Completed
+01_TryHackMe_Nmap.docx
+Nmap Live Host Discovery
+Completed
+02_TryHackMe_Nmap_Live_Host_Discovery.docx
+Nmap Basic Port Scans
+Completed
+03_TryHackMe_Nmap_Basic_Port_Scans.docx
+Windows Basics
+Completed
+04_TryHackMe_Windows_Basics.docx
+Windows Fundamentals 1
+Completed
+05_TryHackMe_Windows_Fundamentals_1.docx
+Windows Fundamentals 2
+Completed
+06_TryHackMe_Windows_Fundamentals_2.docx
+Wireshark sample captures (3)
+Completed
+07, 08 and 09 Wireshark Capture Exercise files
+
+
+4. Hands-on Task 1: Capture traffic
+Installed Apache on the Ubuntu VM: sudo apt install apache2.
+From Kali, ran ping, curl and nslookup against the Ubuntu VM while Wireshark captured on eth0.
+Saved the PCAP in the Captures folder.
+Item
+Ubuntu IP
+Kali IP
+PCAP file name
+What I saw in the handshake
+HTTP GET request seen
+
+
+5. Hands-on Task 2: Nmap on my own VMs
+Scan
+Command
+Output files
+Ping scan
+nmap -sn <subnet>
+-oN / -oX
+SYN scan
+sudo nmap -sS <target>
+-oN / -oX
+Version scan
+nmap -sV <target>
+-oN / -oX
+OS detection
+sudo nmap -O <target>
+-oN / -oX
+Aggressive
+sudo nmap -A <target>
+-oN / -oX
+
+
+Both the Ubuntu and Windows VMs were scanned. The -sS scan was captured in Wireshark using the filter tcp.flags.syn==1 && tcp.flags.ack==0. This burst of SYN packets followed by RST packets is the pattern that Snort will detect in Week 3.
+6. Hands-on Task 3: Windows events
+Event
+How I generated it
+4625 failed logon
+Wrong password sign-in
+4624 successful logon (type: [Fill in])
+Correct sign-in
+4720 new user
+net user labuser ... /add
+4732 user added to Administrators
+net localgroup Administrators labuser /add
+7045 service created and deleted
+sc create / sc delete
+1102 log cleared
+wevtutil cl Security
+
+
+7. Hands-on Task 4: PowerShell hunting
+I exported all 4625 events with Get-WinEvent -FilterHashtable, saved them to CSV, and counted failures per account with Group-Object.
+
+8. Cheat sheets
+Wireshark Filter - Meaning - When to Use It (20 entries).
+Windows Event ID - What It Means - When to Use It (15 entries).
+
