@@ -1,0 +1,68 @@
+Writeup: TryHackMe Windows Fundamentals 2
+Item
+Details
+Room
+Windows Fundamentals 2
+Link
+https://tryhackme.com/room/windowsfundamentals2x0x
+Platform
+TryHackMe (free room)
+
+
+1. Overview
+This room moves from the basics to the administrative tools used to inspect and control a Windows system: System Configuration, UAC settings, Computer Management, System Information, Resource Monitor, the Command Prompt and the Registry Editor.
+2. Learning objectives
+Use msconfig to see boot and startup settings.
+Understand UAC levels.
+Use Computer Management, System Information and Resource Monitor.
+Run basic Command Prompt commands.
+Explain what the registry stores.
+3. Topics covered
+Tool
+Command
+What it shows
+Security use
+System Configuration
+msconfig
+General, boot, services and tools tabs.
+Check which services and programs start with Windows.
+UAC settings
+UserAccountControlSettings
+The notification level for admin actions.
+Weak settings make silent elevation easier.
+Computer Management
+compmgmt.msc
+Task Scheduler, Event Viewer, shared folders, local users and groups, Device Manager, Disk Management and Services.
+Review scheduled tasks, shares, accounts and logs in one place.
+System Information
+msinfo32
+Detailed hardware and software summary.
+Collect host details during an investigation.
+Resource Monitor
+resmon
+Live CPU, memory, disk and network use per process.
+Find processes with strange network activity.
+Command Prompt
+cmd
+Text commands such as hostname, ipconfig, netstat, net user, tasklist.
+Quick checks and scripting.
+Registry Editor
+regedit
+The registry database (hives such as HKLM and HKCU).
+Check startup keys and settings changed by malware.
+
+
+5. Key takeaways
+These tools are the Windows analyst's everyday toolkit.
+Startup items, scheduled tasks and registry Run keys are common places for persistence.
+Event Viewer inside Computer Management leads directly into the Event ID work of Week 2.
+
+
+
+
+
+
+
+
+
+
